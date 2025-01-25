@@ -1,19 +1,37 @@
 {
   "cSpell.words": [
     "asyncpg",
+    "BUILDKIT",
+    "datefmt",
     "docformatter",
     "docstrings",
     "dotenv",
     "fastapi",
+    "healthcheck",
+    "healthz",
     "isort",
+    "isready",
+    "jsonlogger",
+    "levelname",
+    "localtime",
     "meditherakis",
     "mypy",
+    "NOTSET",
+    "onupdate",
+    "pathsep",
+    "poolclass",
     "pycache",
     "pydantic",
     "PYFILES",
+    "pylint",
     "pyproject",
+    "pythonjsonlogger",
+    "qualname",
+    "sessionmaker",
+    "sqlalchemy",
     "uvicorn",
-    "venv"
+    "venv",
+    "zoneinfo"
   ],
 
   // General
@@ -54,5 +72,4 @@
   // MyPy
   "mypy.runUsingActiveInterpreter": true,
   "mypy.configFile": "pyproject.toml",
-
 }

@@ -14,6 +14,7 @@ venv:
 	python -m venv .venv
 
 activate-venv:
+	@echo "\n 🐍 Activating virtual environment..."
 	source .venv/bin/activate
 
 # Install
@@ -22,6 +23,27 @@ install:
 
 install-dev:
 	pip install -r requirements_dev.txt
+
+# DB operations
+# Sync migrations
+setup-alembic:
+	alembic init migrations
+
+# Async migrations
+async-alembic:
+	alembic init -t async migrations
+
+migrate:
+	set -a; . ./.dev.env; alembic revision --autogenerate -m "$(filename)"
+
+upgrade:
+	set -a; . ./.dev.env; alembic upgrade head
+
+downgrade:
+	set -a; . ./.dev.env; alembic downgrade $(version)
+
+head:
+	set -a; . ./.dev.env; alembic current
 
 # Runs the static code analysis tools
 .PHONY: lint
@@ -41,3 +63,19 @@ check:
 	@find ${PYFILES} -name "*.py" ! -name "test_*.py" -exec docformatter -c {} +
 	@ruff format --check ${PYFILES}
 	@ruff check ${PYFILES}
+
+# Local Start up
+dev:
+	uvicorn app:app --reload --proxy-headers --host 0.0.0.0 --port ${PORT}
+
+start:
+	uvicorn app:app --proxy-headers --host 0.0.0.0 --port ${PORT}
+
+# Docker command
+down-rm:
+	docker compose -f ./docker-compose.inf.yml down --remove-orphans --rmi all --volumes
+
+# Infrastructure to support project
+infra-up:
+	COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker compose -f ./docker-compose.inf.yml build --parallel
+	docker compose -f ./docker-compose.inf.yml up -d --force-recreate

@@ -11,7 +11,7 @@ class Config(BaseSettings):
     URL_PREFIX: str = Field(description="URL to prefix routes on server", default="meditherakis/api")
 
     # ENTRY POINTS
-    API_URL: str = Field(description="Server API url", default="http://localhost:8000")
+    API_URL: str = Field(description="Server API url", default="http://localhost:8080")
 
     # ADAPTERS
     SERVICE_NAME: str = Field(description="Service name for the server", default="meditherakis_service")
@@ -21,6 +21,7 @@ class Config(BaseSettings):
     )
 
     # DB
+    LOGS_DB: bool = Field(description="Display logs sqlalchemy", default=False)
     DB_URL: str = Field(description="DB URL for the backend", default="")
     DB_USERNAME: str = Field(description="DB Username", default="postgres")
     DB_HOST: str = Field(description="DB Host", default="127.0.0.1")
@@ -38,7 +39,7 @@ class Config(BaseSettings):
         return f"postgresql+asyncpg://{db_username}:{db_password}@{db_host}:{db_port}/{db_name}"
 
     @property
-    def get_db_url(self) -> str:
+    def retrieve_db_url(self) -> str:
         """Return db url for the connection to db."""
         if self.DB_URL:
             return self.DB_URL
