@@ -1,25 +1,26 @@
 from fastapi import FastAPI, Request
-
-# from fastapi.encoders import jsonable_encoder
+from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 
 from app.server import start_server
+from app.server.errors import CustomError
 
 from .adapters import init_loggers, logger
 from .config import config
 from .db import connections
 
-# from app.server.errors import CustomError
-
-
 app = FastAPI()
 
 
-# @app.exception_handler(CustomError)
-# async def custom_error(_req: Request, err: CustomError) -> JSONResponse:
-#     """Custom Error middleware."""
-#     logger.error(err)
-#     return JSONResponse(status_code=err.status_code, content=jsonable_encoder(err.serialize_error()))
+@app.exception_handler(CustomError)
+def custom_error(_req: Request, err: CustomError) -> JSONResponse:
+    """Handle custom errors and return a JSON response.
+
+    Returns:
+        JSONResponse: A JSON response with the error details and status code.
+    """
+    logger.error(err)
+    return JSONResponse(status_code=err.status_code, content=jsonable_encoder(err.serialize_error()))
 
 
 @app.exception_handler(Exception)
