@@ -1,11 +1,11 @@
-from pydantic import BaseModel, ConfigDict, field_validator, with_config
+from pydantic import BaseModel, field_validator
 
 
 # this config allows to raise error on extra properties and allow to create objects from attributes
-@with_config(ConfigDict(extra="forbid", from_attributes=True))
 class NewQuote(BaseModel):
     """New quote payload validator."""
 
+    model_config = {"extra": "forbid", "from_attributes": True}
     quote: str
 
     @field_validator("quote")
