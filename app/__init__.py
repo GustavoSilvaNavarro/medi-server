@@ -1,17 +1,16 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+
+# from fastapi.encoders import jsonable_encoder
+from fastapi.responses import JSONResponse
 
 from app.server import start_server
 
 from .adapters import init_loggers, logger
 from .config import config
-
-# from fastapi.encoders import jsonable_encoder
-# from fastapi.responses import JSONResponse
-
+from .db import connections
 
 # from app.server.errors import CustomError
 
-# from .db import connections
 
 app = FastAPI()
 
@@ -23,11 +22,15 @@ app = FastAPI()
 #     return JSONResponse(status_code=err.status_code, content=jsonable_encoder(err.serialize_error()))
 
 
-# @app.exception_handler(Exception)
-# async def global_error(_req: Request, err: Exception) -> JSONResponse:
-#     """Global Error handler."""
-#     logger.error(err)
-#     return JSONResponse(status_code=500, content={"error": "Server Error", "detail": str(err) if str(err) else None})
+@app.exception_handler(Exception)
+def global_error(_req: Request, err: Exception) -> JSONResponse:
+    """Global Error handler.
+
+    Returns:
+       JSONResponse: A JSON response with a 500 status code and error details.
+    """
+    logger.error(err)
+    return JSONResponse(status_code=500, content={"error": "Server Error", "detail": str(err) or None})
 
 
 def start_app() -> FastAPI:
@@ -49,7 +52,7 @@ def start_app() -> FastAPI:
 async def shutdown_app() -> None:
     """Shutdown FastAPI Server and Connections."""
     logger.info("Shutdown -> Server shutting down")
-    # await connections.engine.dispose()
+    await connections.engine.dispose()
 
 
 app.add_event_handler("startup", start_app)

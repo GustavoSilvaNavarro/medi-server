@@ -28,6 +28,7 @@
     "pythonjsonlogger",
     "qualname",
     "sessionmaker",
+    "sqladmin",
     "sqlalchemy",
     "uvicorn",
     "venv",
