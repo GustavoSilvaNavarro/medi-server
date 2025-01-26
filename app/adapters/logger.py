@@ -2,7 +2,6 @@ import logging
 import logging.handlers
 import sys
 from pathlib import Path
-from typing import Optional
 
 from pythonjsonlogger.core import LogRecord
 from pythonjsonlogger.json import JsonFormatter
@@ -72,7 +71,7 @@ def add_file_handler(logger_instance: logging.Logger, level: str, filename: str)
     logger_instance.addHandler(log_handler)
 
 
-def init_loggers(level: str, file_level: Optional[str] = None, filename: Optional[str] = None) -> None:
+def init_loggers(level: str, file_level: str | None = None, filename: str | None = None) -> None:
     """Start loggers for the whole app.
 
     We need the minimum log level of the two so that we don't accidentally
@@ -103,7 +102,7 @@ def init_loggers(level: str, file_level: Optional[str] = None, filename: Optiona
         )
 
 
-def min_log_level(level1: str, level2: Optional[str]) -> str:
+def min_log_level(level1: str, level2: str | None) -> str:
     """Check the minimum log level by default.
 
     Args:

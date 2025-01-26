@@ -1,5 +1,3 @@
-from typing import Optional
-
 from .custom_error import CustomError
 from .error_msg import ErrorMessage
 
@@ -7,9 +5,9 @@ from .error_msg import ErrorMessage
 class InternalServerError(CustomError):
     """Internal Server Error."""
 
-    details: Optional[str]
+    details: str | None
 
-    def __init__(self, message: str, status_code: int = 500, details: Optional[str] = None) -> None:
+    def __init__(self, message: str, status_code: int = 500, details: str | None = None) -> None:
         """Initialize InternalServerError with a message, status code, and optional details.
 
         Args:
