@@ -1,3 +1,3 @@
-from .quotes_schema import NewQuote
+from .quotes_schema import NewQuote, NewQuoteResponse
 
-__all__ = ["NewQuote"]
+__all__ = ["NewQuote", "NewQuoteResponse"]

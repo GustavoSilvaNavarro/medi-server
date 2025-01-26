@@ -1,3 +1,7 @@
+# pylint: disable=missing-class-docstring
+# ruff: noqa: D106
+from datetime import datetime
+
 from pydantic import BaseModel, field_validator
 
 
@@ -6,6 +10,7 @@ class NewQuote(BaseModel):
     """New quote payload validator."""
 
     model_config = {"extra": "forbid", "from_attributes": True}
+
     quote: str
 
     @field_validator("quote")
@@ -26,3 +31,15 @@ class NewQuote(BaseModel):
             msg = f"Value: {value}, can not be empty."
             raise ValueError(msg)
         return value
+
+
+class NewQuoteResponse(BaseModel):
+    """Output for newly created quote."""
+
+    model_config = {"from_attributes": True}
+
+    id: int
+    quote: str
+    created_at: datetime
+    updated_at: datetime
+    deleted_at: datetime | None

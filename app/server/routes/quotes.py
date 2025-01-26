@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.connections import connections
-from app.schemas import NewQuote
+from app.schemas import NewQuote, NewQuoteResponse
 from app.services import stores_new_quote
 
 router = APIRouter()
@@ -16,7 +16,10 @@ router = APIRouter()
     description="Creates new quote",
     status_code=status.HTTP_201_CREATED,
 )
-async def add_new_single_quote(payload: NewQuote, db: Annotated[AsyncSession, Depends(connections.get_db)]):
+async def add_new_single_quote(
+    payload: NewQuote,
+    db: Annotated[AsyncSession, Depends(connections.get_db)],
+) -> NewQuoteResponse:
     """Create a new quote in the database.
 
     Args:

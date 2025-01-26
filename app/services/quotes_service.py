@@ -1,10 +1,10 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.models import Quotes
-from app.schemas import NewQuote
+from app.schemas import NewQuote, NewQuoteResponse
 
 
-async def stores_new_quote(payload: NewQuote, db: AsyncSession) -> Quotes:
+async def stores_new_quote(payload: NewQuote, db: AsyncSession) -> NewQuoteResponse:
     """Store a new single quote in the db.
 
     Returns:
@@ -14,4 +14,4 @@ async def stores_new_quote(payload: NewQuote, db: AsyncSession) -> Quotes:
     db.add(new_quote)
     await db.commit()
 
-    return new_quote
+    return NewQuoteResponse.model_validate(new_quote)
