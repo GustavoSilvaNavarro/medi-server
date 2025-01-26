@@ -13,7 +13,12 @@ class Connections:
 
     def __init__(self) -> None:  # noqa: D107
         self.engine = create_async_engine(url=config.retrieve_db_url, echo=config.LOGS_DB, future=True)
-        self.async_session = async_sessionmaker(class_=AsyncSession, bind=self.engine, expire_on_commit=False)
+        self.async_session = async_sessionmaker(
+            class_=AsyncSession,
+            bind=self.engine,
+            expire_on_commit=False,
+            autoflush=False,
+        )
 
     async def get_db(self) -> AsyncGenerator[AsyncSession]:
         """Get DB connection to use it to store data into the DB.

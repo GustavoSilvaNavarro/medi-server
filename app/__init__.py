@@ -39,7 +39,6 @@ def start_app() -> FastAPI:
 
     Returns:
         FastAPI: The FastAPI application instance.
-
     """
     init_loggers(config.LOG_LEVEL)
 

@@ -1,6 +1,7 @@
 {
   "cSpell.words": [
     "asyncpg",
+    "autoflush",
     "BUILDKIT",
     "datefmt",
     "docformatter",

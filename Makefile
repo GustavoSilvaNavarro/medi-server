@@ -3,8 +3,8 @@ PORT = 8080
 SERVICE_NAME = meditherakis_service
 CONTAINER_NAME = $(SERVICE_NAME)
 DOCKER_COMPOSE_TAG = $(SERVICE_NAME)_1
-APP_PYFILES=app/*.py
-TESTS_PYFILES=tests/*/*.py
+APP_PYFILES=app/
+TESTS_PYFILES=tests/
 PYFILES = $(APP_PYFILES)
 PYTHON_VERSION=3.12
 
@@ -60,7 +60,7 @@ format:
 # Checks if the code is formatted correctly
 .PHONY: check
 check:
-	@find ${PYFILES} -name "*.py" ! -name "test_*.py" -exec docformatter -c {} +
+	@find "${PYFILES}" -name "test_*.py" -exec docformatter -c {} +
 	@ruff format --check ${PYFILES}
 	@ruff check ${PYFILES}
 

@@ -19,5 +19,5 @@ def start_server(server: FastAPI) -> FastAPI:
     )
     start_admin(server=server)
 
-    logger.info("Server is starting...")
+    logger.info("🎃 Server is starting...")
     return server

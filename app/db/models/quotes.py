@@ -9,5 +9,5 @@ class Quotes(BaseModel):
 
     __tablename__ = "quotes"
 
-    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True, unique=True, nullable=False)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True, nullable=False, index=True)
     quote: Mapped[str] = mapped_column(Text, nullable=False, unique=True)
