@@ -77,5 +77,6 @@ down-rm:
 
 # Infrastructure to support project
 infra-up:
+	@echo "\n🛫 Building external services needed it for project..."
 	COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker compose -f ./docker-compose.inf.yml build --parallel
 	docker compose -f ./docker-compose.inf.yml up -d --force-recreate

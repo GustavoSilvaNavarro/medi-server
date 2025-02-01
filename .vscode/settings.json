@@ -12,6 +12,7 @@
     "healthz",
     "isort",
     "isready",
+    "jsonable",
     "jsonlogger",
     "levelname",
     "localtime",
