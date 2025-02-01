@@ -30,8 +30,9 @@ class Connections:
 
         try:
             yield db_conn
-        except Exception:  # pylint: disable=W0718  # noqa: BLE001
+        except Exception:  # pylint: disable=W0718
             await db_conn.rollback()
+            raise  # NOTE: important to re raise an error, in fastapi otherwise the customer error middleware wont work
         finally:
             await db_conn.close()
 

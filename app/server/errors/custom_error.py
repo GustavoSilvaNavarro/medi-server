@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from .error_msg import ErrorMessage
 
 
-class CustomError(ABC, Exception):
+class CustomError(Exception, ABC):
     """Custom errors."""
 
     message: str

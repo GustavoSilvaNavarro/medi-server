@@ -13,7 +13,7 @@ app = FastAPI()
 
 
 @app.exception_handler(CustomError)
-def custom_error(_req: Request, err: CustomError) -> JSONResponse:
+async def custom_error(_req: Request, err: CustomError) -> JSONResponse:  # noqa: RUF029
     """Handle custom errors and return a JSON response.
 
     Returns:
@@ -24,7 +24,7 @@ def custom_error(_req: Request, err: CustomError) -> JSONResponse:
 
 
 @app.exception_handler(Exception)
-def global_error(_req: Request, err: Exception) -> JSONResponse:
+async def global_error(_req: Request, err: Exception) -> JSONResponse:  # noqa: RUF029
     """Global Error handler.
 
     Returns:
