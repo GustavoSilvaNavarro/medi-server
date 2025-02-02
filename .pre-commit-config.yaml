@@ -1,5 +1,5 @@
 repos:
-  - repo: local
+  - repo: local # for new custom hooks local is the choice
     hooks:
       - id: make-check
         name: Run Linter and formatter checks
