@@ -1,0 +1,8 @@
+repos:
+  - repo: local
+    hooks:
+      - id: make-check
+        name: Run Linter and formatter checks
+        entry: make check  # This runs the `make check` command
+        language: system   # Use system shell to execute the command
+        pass_filenames: false  # We don't need to pass filenames, because `make check` runs checks for the whole project
