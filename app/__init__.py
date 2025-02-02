@@ -25,7 +25,7 @@ async def custom_error(_req: Request, err: CustomError) -> JSONResponse:  # noqa
 
 @app.exception_handler(Exception)
 async def global_error(_req: Request, err: Exception) -> JSONResponse:  # noqa: RUF029
-    """Global Error handler.
+    """Global Error handler middleware.
 
     Returns:
        JSONResponse: A JSON response with a 500 status code and error details.
