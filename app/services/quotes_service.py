@@ -1,3 +1,4 @@
+from fastapi import Request
 from sqlalchemy import func
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
@@ -5,6 +6,8 @@ from sqlalchemy.future import select
 from app.db.models import Quotes
 from app.schemas import NewQuote, NewQuoteResponse
 from app.server.errors import BadRequestError
+
+REDIS_TOTAL_QUOTES_COUNT_PREFIX = "total-quotes-count"
 
 
 async def stores_new_quote(payload: NewQuote, db: AsyncSession) -> NewQuoteResponse:
@@ -56,11 +59,17 @@ async def retrieve_single_quote(quote_id: int, db: AsyncSession) -> NewQuoteResp
     return NewQuoteResponse.model_validate(quote)
 
 
-async def total_number_of_quotes(db: AsyncSession) -> int:
+async def total_number_of_quotes(req: Request, db: AsyncSession) -> int:
     """Return the total count of quotes in the database.
 
     Returns:
         int: The total number of quotes.
     """
+    cache_total_count = await req.app.state.redis.get_val(REDIS_TOTAL_QUOTES_COUNT_PREFIX)
+    if cache_total_count:
+        return int(cache_total_count)
+
     records = await db.execute(select(func.count()).select_from(Quotes))  # pylint: disable=not-callable
-    return records.scalar_one_or_none() or 0
+    total_count = records.scalar_one_or_none() or 0
+    await req.app.state.redis.set_val(key=REDIS_TOTAL_QUOTES_COUNT_PREFIX, value=total_count)
+    return total_count

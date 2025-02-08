@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from sqladmin import Admin
 
-from app.db.connections import connections
+from app.connections import connections
 
 from .models import QuotesAdmin
 

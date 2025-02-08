@@ -3,6 +3,7 @@ from collections.abc import AsyncGenerator
 from sqlalchemy.ext.asyncio import AsyncEngine, async_sessionmaker, create_async_engine
 from sqlalchemy.ext.asyncio.session import AsyncSession
 
+from app.adapters.redis import RedisConnectionManager
 from app.config import config
 
 
@@ -10,6 +11,7 @@ class Connections:
     """Class to manage all third parties connections."""
 
     engine: AsyncEngine
+    rc: RedisConnectionManager
 
     def __init__(self) -> None:  # noqa: D107
         self.engine = create_async_engine(url=config.retrieve_db_url, echo=config.LOGS_DB, future=True)
@@ -18,6 +20,11 @@ class Connections:
             bind=self.engine,
             expire_on_commit=False,
             autoflush=False,
+        )
+        self.rc = RedisConnectionManager(
+            host=config.REDIS_HOST,
+            port=config.REDIS_PORT,
+            master_set=config.REDIS_MASTER_SET,
         )
 
     async def get_db(self) -> AsyncGenerator[AsyncSession]:

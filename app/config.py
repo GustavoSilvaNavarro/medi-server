@@ -20,6 +20,12 @@ class Config(BaseSettings):
         default="INFO",
     )
 
+    # Redis
+    REDIS_HOST: str = Field(default="localhost", description="Redis connection host.")
+    REDIS_PORT: int = Field(description="Redis connection port.", default=6379)
+    REDIS_MASTER_SET: str = Field(description="Master Key for redis sentinel", default="mymaster")
+    USE_LOCAL_REDIS: bool = Field(description="Boolean to use local redis or sentinel", default=False)
+
     # DB
     LOGS_DB: bool = Field(description="Display logs sqlalchemy", default=False)
     DB_URL: str = Field(description="DB URL for the backend", default="")

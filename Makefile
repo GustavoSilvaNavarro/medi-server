@@ -8,6 +8,11 @@ TESTS_PYFILES=tests/
 PYFILES = $(APP_PYFILES)
 PYTHON_VERSION=3.12
 
+# hooks
+setup-git-hooks:
+	@echo "\n👻 Setting up pre commit hook to maintain code quality"
+	pre-commit install
+
 # Virtual env
 venv:
 	@echo "\n🐍 Creating virtual environment..."

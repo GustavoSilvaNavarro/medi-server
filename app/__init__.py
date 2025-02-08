@@ -7,7 +7,7 @@ from app.server.errors import CustomError
 
 from .adapters import init_loggers, logger
 from .config import config
-from .db import connections
+from .connections import connections
 
 app = FastAPI()
 
@@ -34,7 +34,7 @@ async def global_error(_req: Request, err: Exception) -> JSONResponse:  # noqa: 
     return JSONResponse(status_code=500, content={"error": "Server Error", "detail": str(err) or None})
 
 
-def start_app() -> FastAPI:
+async def start_app() -> FastAPI:
     """Start FastApi Server with all its connections.
 
     Returns:
@@ -42,6 +42,8 @@ def start_app() -> FastAPI:
     """
     init_loggers(config.LOG_LEVEL)
 
+    await connections.rc.get_connection()
+    app.state.redis = connections.rc
     api_sever = start_server(app)
 
     logger.info("%s Service is starting...", config.SERVICE_NAME)
@@ -53,6 +55,7 @@ async def shutdown_app() -> None:
     """Shutdown FastAPI Server and Connections."""
     logger.info("Shutdown -> Server shutting down")
     await connections.engine.dispose()
+    await connections.rc.close()
 
 
 app.add_event_handler("startup", start_app)

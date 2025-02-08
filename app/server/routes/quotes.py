@@ -1,9 +1,9 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, Request, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.db.connections import connections
+from app.connections import connections
 from app.schemas import NewQuote, NewQuoteResponse
 from app.services import get_all_quotes, retrieve_single_quote, stores_new_quote, total_number_of_quotes
 
@@ -75,14 +75,18 @@ async def get_single_quote(quote_id: int, db: Annotated[AsyncSession, Depends(co
     description="Returns the total count of records in the quotes table.",
     status_code=status.HTTP_200_OK,
 )
-async def get_total_of_quotes(db: Annotated[AsyncSession, Depends(connections.get_db)]) -> dict[str, str | int]:
+async def get_total_of_quotes(
+    req: Request,
+    db: Annotated[AsyncSession, Depends(connections.get_db)],
+) -> dict[str, str | int]:
     """Get the total number of quotes in the database.
 
     Args:
+        req (Request): The FastAPI request object.
         db (AsyncSession): The database session.
 
     Returns:
         dict[str, str | int]: Dictionary containing status and total count.
     """
-    total_rows = await total_number_of_quotes(db=db)
+    total_rows = await total_number_of_quotes(req=req, db=db)
     return {"status": "success", "total_count": total_rows}
