@@ -17,19 +17,21 @@ router = APIRouter()
     status_code=status.HTTP_201_CREATED,
 )
 async def add_new_single_quote(
+    req: Request,
     payload: NewQuote,
     db: Annotated[AsyncSession, Depends(connections.get_db)],
 ) -> NewQuoteResponse:
     """Create a new quote in the database.
 
     Args:
+        req (Request): The FastAPI request object.
         payload (NewQuote): The data for the new quote.
         db (AsyncSession): The database session.
 
     Returns:
-        Quotes: The created quote object.
+        NewQuoteResponse: The created quote object.
     """
-    return await stores_new_quote(payload=payload, db=db)
+    return await stores_new_quote(req=req, payload=payload, db=db)
 
 
 @router.get(

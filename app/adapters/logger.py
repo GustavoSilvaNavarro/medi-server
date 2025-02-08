@@ -39,7 +39,6 @@ class CustomJsonFormatter(JsonFormatter):
 
         Returns:
             LogRecord: The processed log record.
-
         """
         log_record["severity"] = log_record["levelname"]
         del log_record["levelname"]
@@ -75,8 +74,7 @@ def init_loggers(level: str, file_level: str | None = None, filename: str | None
     """Start loggers for the whole app.
 
     We need the minimum log level of the two so that we don't accidentally
-    set a logger to log at a higher level than is expected by either the
-    stdout or file handlers.
+    set a logger to log at a higher level than is expected by either the stdout or file handlers.
     """
     min_level = min_log_level(level, file_level)
 
@@ -111,6 +109,5 @@ def min_log_level(level1: str, level2: str | None) -> str:
 
     Returns:
         str: The minimum log level as a string.
-
     """
     return min([level1, level2 or "CRITICAL"], key=logging.getLevelName)

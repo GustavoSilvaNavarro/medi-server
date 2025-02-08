@@ -10,16 +10,18 @@ from app.server.errors import BadRequestError
 REDIS_TOTAL_QUOTES_COUNT_PREFIX = "total-quotes-count"
 
 
-async def stores_new_quote(payload: NewQuote, db: AsyncSession) -> NewQuoteResponse:
+async def stores_new_quote(req: Request, payload: NewQuote, db: AsyncSession) -> NewQuoteResponse:
     """Store a new single quote in the db.
 
     Returns:
         Quotes: The newly created quote object.
     """
+    cache_total_count = await total_number_of_quotes(req=req, db=db)
     new_quote = Quotes(**payload.model_dump())
     db.add(new_quote)
     await db.commit()
 
+    await req.app.state.redis.set_val(key=REDIS_TOTAL_QUOTES_COUNT_PREFIX, value=cache_total_count + 1)
     return NewQuoteResponse.model_validate(new_quote)
 
 
