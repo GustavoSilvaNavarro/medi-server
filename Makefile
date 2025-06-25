@@ -70,13 +70,16 @@ check:
 	@ruff check ${PYFILES}
 
 # Local Start up
-dev:
+dev: upgrade
 	uvicorn app:app --reload --proxy-headers --host 0.0.0.0 --port ${PORT}
 
-start:
+start: upgrades
 	uvicorn app:app --proxy-headers --host 0.0.0.0 --port ${PORT}
 
 # Docker command
+run-external-services:
+	docker compose -f ./docker-compose.inf.yml up -d db redis redis-sentinel
+
 down-rm:
 	docker compose -f ./docker-compose.inf.yml down --remove-orphans --rmi all --volumes
 

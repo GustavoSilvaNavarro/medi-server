@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
 from app.db.models import Quotes
-from app.schemas import NewQuote, NewQuoteResponse
+from app.schemas import NewQuote, NewQuoteResponse, NewQuotes
 from app.server.errors import BadRequestError
 
 REDIS_TOTAL_QUOTES_COUNT_PREFIX = "total-quotes-count"
@@ -75,3 +75,28 @@ async def total_number_of_quotes(req: Request, db: AsyncSession) -> int:
     total_count = records.scalar_one_or_none() or 0
     await req.app.state.redis.set_val(key=REDIS_TOTAL_QUOTES_COUNT_PREFIX, value=total_count)
     return total_count
+
+
+async def stores_new_incoming_quotes(
+    req: Request,
+    payload: NewQuotes,
+    db: AsyncSession,
+) -> NewQuoteResponse | list[NewQuoteResponse]:
+    """Store one or multiple new quotes in the database.
+
+    Args:
+        req (Request): The FastAPI request object.
+        payload (NewQuotes): The quote(s) to be stored.
+        db (AsyncSession): The database session.
+
+    Returns:
+        NewQuoteResponse | list[NewQuoteResponse]: Single quote response or list of quote responses.
+    """
+    if isinstance(payload.quotes, str):
+        return await stores_new_quote(req=req, payload=NewQuote(quote=payload.quotes), db=db)
+
+    new_quotes = [Quotes(quote=quote) for quote in payload.quotes]
+    db.add_all(new_quotes)
+    await db.commit()
+
+    return [NewQuoteResponse.model_validate(quote for quote in new_quotes)]

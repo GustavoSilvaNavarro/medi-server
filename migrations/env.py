@@ -1,5 +1,4 @@
 # pylint: disable=no-member, unused-import
-# flake8: noqa F401
 # ruff: noqa: F401, ERA001, INP001
 import asyncio
 from logging.config import fileConfig

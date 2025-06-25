@@ -1,5 +1,4 @@
 # pylint: disable=missing-class-docstring
-# ruff: noqa: D106
 from datetime import datetime
 
 from pydantic import BaseModel, field_validator
@@ -43,3 +42,42 @@ class NewQuoteResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
     deleted_at: datetime | None
+
+
+class NewQuotes(BaseModel):
+    """New quotes payload validator."""
+
+    model_config = {"extra": "forbid", "from_attributes": True}
+
+    quotes: str | list[str]
+
+    @field_validator("quotes")
+    @classmethod
+    def check_non_empty_value(cls, value: str | list[str]) -> str | list[str]:
+        """Validate that the provided value is not empty.
+
+        Args:
+            value (str | list[str]): The value to validate, either a string or list of strings.
+
+        Returns:
+            str | list[str]: The validated value.
+
+        Raises:
+            ValueError: If the value is empty or consists only of whitespace,
+                       or if it's a list containing empty strings.
+        """
+        if isinstance(value, str):
+            if not value or not value.strip():
+                msg = f"Value: {value}, can not be empty."
+                raise ValueError(msg)
+            return value
+
+        if not value:  # Empty list check
+            msg = f"Quote list cannot be empty => Value: {value}"
+            raise ValueError(msg)
+
+        for quote in value:
+            if not quote or not quote.strip():
+                msg = "Quote strings in list cannot be empty."
+                raise ValueError(msg)
+        return value

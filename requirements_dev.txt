@@ -1,4 +1,4 @@
 mypy==1.15.0
-ruff==0.9.5
+ruff==0.12.0
 docformatter==1.7.5
 pre_commit==4.1.0

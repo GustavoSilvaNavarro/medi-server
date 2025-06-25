@@ -1,13 +1,15 @@
 [tool.mypy]
-python_version = "3.12"
+python_version = "3.13"
 disallow_untyped_defs = true
 exclude = ".venv"
 plugins = ["pydantic.mypy"]
-ignore_missing_imports = false
+ignore_missing_imports = true
+check_untyped_defs = true
+strict = true
 
 [tool.ruff]
 line-length = 120
-target-version = "py312"
+target-version = "py313"
 preview = true
 exclude = ["migrations/versions/*"]  # Add this line to ignore rules for the specified folder
 
@@ -17,7 +19,8 @@ lint.ignore = [ # this list deactivates rules from ruff
     "D100", # Missing docstring in public module
     "UP007", # Use `X | Y` for type annotations
     "D104", # Missing docstring in public package
-    "D413" # Missing blank line after last section
+    "D413", # Missing blank line after last section
+    "EXE002"
 ]
 
 [tool.ruff.format]
