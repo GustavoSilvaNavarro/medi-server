@@ -1,3 +1,5 @@
+from typing import ClassVar
+
 from pydantic import Field
 from pydantic_settings import BaseSettings
 
@@ -19,6 +21,11 @@ class Config(BaseSettings):
         description="Python logging level. Must be a string like 'DEBUG' or 'ERROR'.",
         default="INFO",
     )
+
+    # Constants
+    # ! Redis constants params
+    CACHE_EXPIRATION_IN_SECONDS: ClassVar[int] = 10_800  # 3 hrs in seconds
+    TOTAL_QUOTES_COUNT_PREFIX: ClassVar[str] = "count-quotes"
 
     # Redis
     REDIS_HOST: str = Field(default="localhost", description="Redis connection host.")

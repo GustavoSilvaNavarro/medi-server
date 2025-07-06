@@ -3,11 +3,10 @@ from sqlalchemy import func
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
+from app.config import config
 from app.db.models import Quotes
 from app.schemas import NewQuote, NewQuoteResponse, NewQuotes
 from app.server.errors import BadRequestError
-
-REDIS_TOTAL_QUOTES_COUNT_PREFIX = "total-quotes-count"
 
 
 async def stores_new_quote(req: Request, payload: NewQuote, db: AsyncSession) -> NewQuoteResponse:
@@ -16,12 +15,15 @@ async def stores_new_quote(req: Request, payload: NewQuote, db: AsyncSession) ->
     Returns:
         Quotes: The newly created quote object.
     """
-    cache_total_count = await total_number_of_quotes(req=req, db=db)
     new_quote = Quotes(**payload.model_dump())
     db.add(new_quote)
     await db.commit()
 
-    await req.app.state.redis.set_val(key=REDIS_TOTAL_QUOTES_COUNT_PREFIX, value=cache_total_count + 1)
+    await req.app.state.redis.set_val(
+        key=config.TOTAL_QUOTES_COUNT_PREFIX,
+        value=new_quote.id,
+        expire=config.CACHE_EXPIRATION_IN_SECONDS,
+    )
     return NewQuoteResponse.model_validate(new_quote)
 
 
@@ -67,17 +69,21 @@ async def total_number_of_quotes(req: Request, db: AsyncSession) -> int:
     Returns:
         int: The total number of quotes.
     """
-    cache_total_count = await req.app.state.redis.get_val(REDIS_TOTAL_QUOTES_COUNT_PREFIX)
+    cache_total_count = await req.app.state.redis.get_val(config.TOTAL_QUOTES_COUNT_PREFIX)
     if cache_total_count:
         return int(cache_total_count)
 
     records = await db.execute(select(func.count()).select_from(Quotes))  # pylint: disable=not-callable
     total_count = records.scalar_one_or_none() or 0
-    await req.app.state.redis.set_val(key=REDIS_TOTAL_QUOTES_COUNT_PREFIX, value=total_count)
+    await req.app.state.redis.set_val(
+        key=config.TOTAL_QUOTES_COUNT_PREFIX,
+        value=total_count,
+        expire=config.CACHE_EXPIRATION_IN_SECONDS,
+    )
     return total_count
 
 
-async def stores_new_incoming_quotes(
+async def stores_new_bulk_incoming_quotes(
     req: Request,
     payload: NewQuotes,
     db: AsyncSession,
@@ -99,4 +105,9 @@ async def stores_new_incoming_quotes(
     db.add_all(new_quotes)
     await db.commit()
 
-    return [NewQuoteResponse.model_validate(quote for quote in new_quotes)]
+    await req.app.state.redis.set_val(
+        key=config.TOTAL_QUOTES_COUNT_PREFIX,
+        value=new_quotes[-1].id,
+        expire=config.CACHE_EXPIRATION_IN_SECONDS,
+    )
+    return new_quotes

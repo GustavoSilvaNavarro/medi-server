@@ -4,8 +4,14 @@ from fastapi import APIRouter, Depends, Request, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.connections import connections
-from app.schemas import NewQuote, NewQuoteResponse
-from app.services import get_all_quotes, retrieve_single_quote, stores_new_quote, total_number_of_quotes
+from app.schemas import NewQuote, NewQuoteResponse, NewQuotes
+from app.services import (
+    get_all_quotes,
+    retrieve_single_quote,
+    stores_new_bulk_incoming_quotes,
+    stores_new_quote,
+    total_number_of_quotes,
+)
 
 router = APIRouter()
 
@@ -32,6 +38,30 @@ async def add_new_single_quote(
         NewQuoteResponse: The created quote object.
     """
     return await stores_new_quote(req=req, payload=payload, db=db)
+
+
+@router.post(
+    "/add/quotes",
+    tags=["Quotes"],
+    description="Add new quotes in the db as bulk",
+    status_code=status.HTTP_201_CREATED,
+)
+async def insert_quotes_in_bulk(
+    req: Request,
+    payload: NewQuotes,
+    db: Annotated[AsyncSession, Depends(connections.get_db)],
+) -> NewQuoteResponse | list[NewQuoteResponse]:
+    """Store either a new single or list of quotes.
+
+    Args:
+        req (Request): The FastAPI request object.
+        payload (NewQuotes): Payload single or list of quotes.
+        db (AsyncSession): The database session.
+
+    Returns:
+        list[NewQuoteResponse | list[NewQuoteResponse]: A list of all quotes in the database.
+    """
+    return await stores_new_bulk_incoming_quotes(req=req, payload=payload, db=db)
 
 
 @router.get(
