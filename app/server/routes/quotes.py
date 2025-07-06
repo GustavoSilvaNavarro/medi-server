@@ -11,6 +11,7 @@ from app.services import (
     stores_new_bulk_incoming_quotes,
     stores_new_quote,
     total_number_of_quotes,
+    update_quote_record,
 )
 
 router = APIRouter()
@@ -122,3 +123,22 @@ async def get_total_of_quotes(
     """
     total_rows = await total_number_of_quotes(req=req, db=db)
     return {"status": "success", "total_count": total_rows}
+
+
+@router.put("/update/{quote_id}", tags=["Quotes"], description="Updates quote record", status_code=status.HTTP_200_OK)
+async def update_quote(
+    quote_id: int,
+    payload: NewQuote,
+    db: Annotated[AsyncSession, Depends(connections.get_db)],
+) -> NewQuoteResponse:
+    """Return an updated quote record.
+
+    Args:
+        quote_id (int): The ID of the quote to be updated.
+        payload (NewQuote): Data to update quote.
+        db (AsyncSession): The database session.
+
+    Returns:
+        NewQuoteResponse: The requested quote.
+    """
+    return await update_quote_record(quote_id=quote_id, payload=payload, db=db)

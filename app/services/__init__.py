@@ -4,6 +4,7 @@ from .quotes_service import (
     stores_new_bulk_incoming_quotes,
     stores_new_quote,
     total_number_of_quotes,
+    update_quote_record,
 )
 
 __all__ = [
@@ -12,4 +13,5 @@ __all__ = [
     "stores_new_bulk_incoming_quotes",
     "stores_new_quote",
     "total_number_of_quotes",
+    "update_quote_record",
 ]

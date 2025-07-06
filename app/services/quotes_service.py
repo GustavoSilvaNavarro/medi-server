@@ -111,3 +111,31 @@ async def stores_new_bulk_incoming_quotes(
         expire=config.CACHE_EXPIRATION_IN_SECONDS,
     )
     return new_quotes
+
+
+async def update_quote_record(quote_id: int, payload: NewQuote, db: AsyncSession) -> NewQuoteResponse:
+    """Update a quote record in a database.
+
+    Args:
+        quote_id (int): unique identifier of the quote record.
+        payload (NewQuote): data that will be used to update a quote record.
+        db (AsyncSession): DB session.
+
+    Returns:
+        NewQuoteResponse: Updated quote.
+
+    Raises:
+        BadRequestError: If quote with given ID doesn't exist.
+    """
+    quote = await db.scalar(select(Quotes).filter_by(id=quote_id))
+    if not quote:
+        msg = f"Quote with ID {quote_id} does not exist."
+        raise BadRequestError(msg)
+
+    updated_quote = payload.model_dump(exclude_unset=True)
+    for key, value in updated_quote.items():
+        setattr(quote, key, value)  # Dynamically set attribute on the SQLAlchemy ORM object
+
+    await db.commit()
+    await db.refresh(quote)
+    return quote
