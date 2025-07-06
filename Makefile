@@ -8,6 +8,16 @@ TESTS_PYFILES=tests/
 PYFILES = $(APP_PYFILES)
 PYTHON_VERSION=3.12
 
+# UV
+setup-venv:
+	uv venv .venv
+
+install-uv:
+	uv pip install -r requirements.txt
+
+install-dev-uv:
+	uv pip install -r requirements_dev.txt
+
 # hooks
 setup-git-hooks:
 	@echo "\n👻 Setting up pre commit hook to maintain code quality"

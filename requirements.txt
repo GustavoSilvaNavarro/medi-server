@@ -1,13 +1,12 @@
 alembic==1.16.2
 asyncpg==0.30.0
-fastapi==0.115.13
+fastapi==0.115.14
 greenlet==3.2.3
 pydantic==2.11.7
 python-dotenv==1.1.1
 python-json-logger==3.3.0
 SQLAlchemy==2.0.41
-uvicorn==0.34.3
+uvicorn==0.35.0
 pydantic-settings==2.10.1
-sqladmin==0.20.1
-uvicorn==0.34.3
+sqladmin==0.21.0
 redis==6.2.0
