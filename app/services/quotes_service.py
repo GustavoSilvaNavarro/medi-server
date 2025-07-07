@@ -1,4 +1,7 @@
-from fastapi import Request
+from typing import TYPE_CHECKING
+
+from elevenlabs.client import ElevenLabs
+from fastapi import Request, UploadFile
 from sqlalchemy import func
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
@@ -7,6 +10,48 @@ from app.config import config
 from app.db.models import Quotes
 from app.schemas import NewQuote, NewQuoteResponse, NewQuotes
 from app.server.errors import BadRequestError
+
+if TYPE_CHECKING:
+    from elevenlabs import SpeechToTextChunkResponseModel
+
+
+elevenlabs = ElevenLabs(api_key=config.ELEVEN_LABS_API_KEY)
+
+
+async def process_and_store_audio_quote(
+    req: Request,
+    audio_file: UploadFile | None,
+    db: AsyncSession,
+) -> NewQuoteResponse:
+    """Process and stores new quote in the database by processing audio.
+
+    Args:
+        req (Request): The FastAPI request object.
+        audio_file (UploadFile): Audio quote to process and store.
+        db (AsyncSession): The database session.
+
+    Returns:
+        NewQuoteResponse: The created quote object.
+    """
+    audio_bytes = await audio_file.read()
+    transcription: SpeechToTextChunkResponseModel = elevenlabs.speech_to_text.convert(
+        file=audio_bytes,
+        model_id=config.ELEVEN_LABS_MODEL,
+        tag_audio_events=False,  # Tag audio events like laughter, applause, etc.
+        language_code="eng",  # Language of the audio file. If set to None, model will detect the lang automatically.
+        diarize=True,  # Whether to annotate who is speaking
+    )
+
+    new_quote = Quotes(quote=transcription.text)
+    db.add(new_quote)
+    await db.commit()
+
+    await req.app.state.redis.set_val(
+        key=config.TOTAL_QUOTES_COUNT_PREFIX,
+        value=new_quote.id,
+        expire=config.CACHE_EXPIRATION_IN_SECONDS,
+    )
+    return new_quote
 
 
 async def stores_new_quote(req: Request, payload: NewQuote, db: AsyncSession) -> NewQuoteResponse:

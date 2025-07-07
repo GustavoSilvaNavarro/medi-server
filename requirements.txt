@@ -11,3 +11,4 @@ pydantic-settings==2.10.1
 sqladmin==0.21.0
 redis==6.2.0
 python-multipart==0.0.20
+elevenlabs==2.6.0

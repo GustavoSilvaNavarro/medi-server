@@ -8,6 +8,7 @@
     "docformatter",
     "docstrings",
     "dotenv",
+    "elevenlabs",
     "fastapi",
     "healthcheck",
     "healthz",

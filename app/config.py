@@ -42,6 +42,10 @@ class Config(BaseSettings):
     DB_PASSWORD: str = Field(description="DB Password", default="")
     DB_NAME: str = Field(description="DB Name", default="")
 
+    # ELEVEN LABS
+    ELEVEN_LABS_API_KEY: str = Field(description="API key for eleven labs", default="")
+    ELEVEN_LABS_MODEL: str = Field(description="Elevenlabs for audio AI", default="")
+
     def _get_db_url(self) -> str:
         db_username = self.DB_USERNAME
         db_password = self.DB_PASSWORD
