@@ -1,19 +1,14 @@
-from typing import TYPE_CHECKING
-
 from elevenlabs.client import ElevenLabs
 from fastapi import Request, UploadFile
 from sqlalchemy import func
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
+from app.adapters.elevenlabs import el
 from app.config import config
 from app.db.models import Quotes
 from app.schemas import NewQuote, NewQuoteResponse, NewQuotes
 from app.server.errors import BadRequestError
-
-if TYPE_CHECKING:
-    from elevenlabs import SpeechToTextChunkResponseModel
-
 
 elevenlabs = ElevenLabs(api_key=config.ELEVEN_LABS_API_KEY)
 
@@ -34,15 +29,9 @@ async def process_and_store_audio_quote(
         NewQuoteResponse: The created quote object.
     """
     audio_bytes = await audio_file.read()
-    transcription: SpeechToTextChunkResponseModel = elevenlabs.speech_to_text.convert(
-        file=audio_bytes,
-        model_id=config.ELEVEN_LABS_MODEL,
-        tag_audio_events=False,  # Tag audio events like laughter, applause, etc.
-        language_code="eng",  # Language of the audio file. If set to None, model will detect the lang automatically.
-        diarize=True,  # Whether to annotate who is speaking
-    )
+    quote = el.convert_speech_to_text(audio=audio_bytes)
 
-    new_quote = Quotes(quote=transcription.text)
+    new_quote = Quotes(quote=quote)
     db.add(new_quote)
     await db.commit()
 
@@ -183,4 +172,6 @@ async def update_quote_record(quote_id: int, payload: NewQuote, db: AsyncSession
 
     await db.commit()
     await db.refresh(quote)
+    return quote
+    return quote
     return quote
