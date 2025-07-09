@@ -27,6 +27,7 @@
     "poolclass",
     "pycache",
     "pydantic",
+    "pydub",
     "PYFILES",
     "pylint",
     "pyproject",

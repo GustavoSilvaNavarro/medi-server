@@ -1,4 +1,3 @@
-from elevenlabs.client import ElevenLabs
 from fastapi import Request, UploadFile
 from sqlalchemy import func
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -7,10 +6,9 @@ from sqlalchemy.future import select
 from app.adapters.elevenlabs import el
 from app.config import config
 from app.db.models import Quotes
+from app.helpers import audio_length_under_limit
 from app.schemas import NewQuote, NewQuoteResponse, NewQuotes
 from app.server.errors import BadRequestError
-
-elevenlabs = ElevenLabs(api_key=config.ELEVEN_LABS_API_KEY)
 
 
 async def process_and_store_audio_quote(
@@ -27,10 +25,16 @@ async def process_and_store_audio_quote(
 
     Returns:
         NewQuoteResponse: The created quote object.
+
+    Raises:
+        BadRequestError: If the audio exceeds the length limit.
     """
     audio_bytes = await audio_file.read()
-    quote = el.convert_speech_to_text(audio=audio_bytes)
+    if not audio_length_under_limit(audio=audio_bytes):
+        msg = "Audio with new quote exceed length limit"
+        raise BadRequestError(msg)
 
+    quote = el.convert_speech_to_text(audio=audio_bytes)
     new_quote = Quotes(quote=quote)
     db.add(new_quote)
     await db.commit()
@@ -172,6 +176,7 @@ async def update_quote_record(quote_id: int, payload: NewQuote, db: AsyncSession
 
     await db.commit()
     await db.refresh(quote)
+    return quote
     return quote
     return quote
     return quote
