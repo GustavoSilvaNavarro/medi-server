@@ -82,7 +82,7 @@ class RedisConnectionManager:
         return None
 
     async def set_val(self, *, key: str, value: int | str | bool, expire: int | None = None) -> None:
-        """Store a value in Redis with an optional expiration time.
+        """Store a value in Redis with an optional expiration time in seconds.
 
         Raises:
             ConnectionError: If Redis connection is closed.

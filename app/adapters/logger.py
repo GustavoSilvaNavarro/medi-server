@@ -73,8 +73,8 @@ def add_file_handler(logger_instance: logging.Logger, level: str, filename: str)
 def init_loggers(level: str, file_level: str | None = None, filename: str | None = None) -> None:
     """Start loggers for the whole app.
 
-    We need the minimum log level of the two so that we don't accidentally
-    set a logger to log at a higher level than is expected by either the stdout or file handlers.
+    We need the minimum log level of the two so that we don't accidentally set a logger to log at a higher level than is
+    expected by either the stdout or file handlers.
     """
     min_level = min_log_level(level, file_level)
 

@@ -8,4 +8,4 @@ router = APIRouter()
 
 router.include_router(monitoring_router)
 router.include_router(redis_routes)
-router.include_router(quotes_router, prefix="/quotes")
+router.include_router(quotes_router, prefix="/quotes", tags=["Quotes"])

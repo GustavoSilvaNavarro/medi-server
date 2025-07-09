@@ -29,7 +29,7 @@ class NewQuote(BaseModel):
         if not value or not value.strip():
             msg = f"Value: {value}, can not be empty."
             raise ValueError(msg)
-        return value
+        return value.strip().lower()
 
 
 class NewQuoteResponse(BaseModel):
@@ -70,9 +70,9 @@ class NewQuotes(BaseModel):
             if not value or not value.strip():
                 msg = f"Value: {value}, can not be empty."
                 raise ValueError(msg)
-            return value
+            return value.strip().lower()
 
-        if not value:  # Empty list check
+        if not len(value):  # Empty list check
             msg = f"Quote list cannot be empty => Value: {value}"
             raise ValueError(msg)
 
@@ -80,4 +80,4 @@ class NewQuotes(BaseModel):
             if not quote or not quote.strip():
                 msg = "Quote strings in list cannot be empty."
                 raise ValueError(msg)
-        return value
+        return [quote.strip().lower() for quote in value]

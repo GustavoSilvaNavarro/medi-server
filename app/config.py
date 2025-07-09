@@ -1,3 +1,5 @@
+from typing import ClassVar
+
 from pydantic import Field
 from pydantic_settings import BaseSettings
 
@@ -20,6 +22,11 @@ class Config(BaseSettings):
         default="INFO",
     )
 
+    # Constants
+    # ! Redis constants params
+    CACHE_EXPIRATION_IN_SECONDS: ClassVar[int] = 10_800  # 3 hrs in seconds
+    TOTAL_QUOTES_COUNT_PREFIX: ClassVar[str] = "count-quotes"
+
     # Redis
     REDIS_HOST: str = Field(default="localhost", description="Redis connection host.")
     REDIS_PORT: int = Field(description="Redis connection port.", default=6379)
@@ -34,6 +41,10 @@ class Config(BaseSettings):
     DB_PORT: int = Field(description="DB Port", default=5433)
     DB_PASSWORD: str = Field(description="DB Password", default="")
     DB_NAME: str = Field(description="DB Name", default="")
+
+    # ELEVEN LABS
+    ELEVEN_LABS_API_KEY: str = Field(description="API key for eleven labs", default="")
+    ELEVEN_LABS_MODEL: str = Field(description="Elevenlabs for audio AI", default="")
 
     def _get_db_url(self) -> str:
         db_username = self.DB_USERNAME
